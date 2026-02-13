@@ -341,7 +341,7 @@ def run():
                     st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add education. It will give the assurance that everything written on your resume is true and fully acknowledged by you</h4>''',unsafe_allow_html=True)
                 ################
                 if 'internship' or 'experience' or 'work history' or 'professional experience 'in resume_text:
-                    resume_score = resume_score + 20
+                    resume_score = resume_score + 15
                     st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added your work history</h4>''',unsafe_allow_html=True)
                 else:
                     st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add work history. </h4>''',unsafe_allow_html=True)

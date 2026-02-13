@@ -172,11 +172,11 @@ def run():
                      resume_score VARCHAR(8) NOT NULL,
                      Timestamp VARCHAR(50) NOT NULL,
                      Page_no VARCHAR(5) NOT NULL,
-                     Predicted_Field BLOB NOT NULL,
-                     User_level BLOB NOT NULL,
-                     Actual_skills BLOB NOT NULL,
-                     Recommended_skills BLOB NOT NULL,
-                     Recommended_courses BLOB NOT NULL,
+                     Predicted_Field VARCHAR(100),
+                     User_level VARCHAR(100),
+                     Actual_skills TEXT,
+                     Recommended_skills  TEXT,
+                     Recommended_courses TEXT ,
                      PRIMARY KEY (ID));
                     """
     cursor.execute(table_sql)
@@ -197,8 +197,11 @@ def run():
             show_pdf(save_image_path)
             resume_data = ResumeParser(save_image_path).get_extracted_data()
             if resume_data:
+
                 ## Get the whole resume data
+                #########################
                 resume_text = pdf_reader(save_image_path)
+                #########################
 
                 st.header("**Resume Analysis**")
                 st.success("Hello "+ resume_data['name'])
@@ -212,14 +215,14 @@ def run():
                     pass
                 cand_level = ''
                 if resume_data['no_of_pages'] == 1:
-                    cand_level = "Fresher"
-                    st.markdown( '''<h4 style='text-align: left; color: #d73b5c;'>You are at Fresher level!</h4>''',unsafe_allow_html=True)
+                    cand_level = "Beginner"
+                    st.markdown( '''<h6 style='text-align: left; color: #d73b5c;'>Beginner level!</h6>''',unsafe_allow_html=True)
                 elif resume_data['no_of_pages'] == 2:
                     cand_level = "Intermediate"
-                    st.markdown('''<h4 style='text-align: left; color: #1ed760;'>You are at intermediate level!</h4>''',unsafe_allow_html=True)
+                    st.markdown('''<h6 style='text-align: left; color: #1ed760;'>Intermediate level!</h6>''',unsafe_allow_html=True)
                 elif resume_data['no_of_pages'] >=3:
-                    cand_level = "Experienced"
-                    st.markdown('''<h4 style='text-align: left; color: #fba171;'>You are at experience level!''',unsafe_allow_html=True)
+                    cand_level = "Advanced"
+                    st.markdown('''<h6 style='text-align: left; color: #fba171;'>Advanced level!</h6>''',unsafe_allow_html=True)
 
                 # st.subheader("**Skills Recommendation💡**")
 
@@ -229,10 +232,10 @@ def run():
                     value=resume_data['skills'],key = '1  ')
 
                 ##  keywords
-                ds_keyword = ['tensorflow','keras','pytorch','machine learning','deep Learning','flask','streamlit']
-                web_keyword = ['react', 'django', 'node jS', 'react js', 'php', 'laravel', 'magento', 'wordpress',
-                               'javascript', 'angular js', 'c#', 'flask']
-                android_keyword = ['android','android development','flutter','kotlin','xml','kivy']
+                ds_keyword = ['tensorflow','keras','pytorch','machine learning','deep Learning','flask','streamlit','NLP','Python']
+                web_keyword = ['Full Stack Developer','Software Engineer','react', 'django', 'node jS', 'react js', 'php', 'laravel', 'magento', 'wordpress','Spring Boot',
+                               'javascript', 'angular js', 'c#', 'flask','Java','Python','.Net','GoLang','C#','HTML','CSS','TailWind CSS']
+                android_keyword = ['android','android development','flutter','kotlin','xml','kivy','Java','React-Native','Dart']
                 ios_keyword = ['ios','ios development','swift','cocoa','cocoa touch','xcode']
                 uiux_keyword = ['ux','adobe xd','figma','zeplin','balsamiq','ui','prototyping','wireframes','storyframes','adobe photoshop','photoshop','editing','adobe illustrator','illustrator','adobe after effects','after effects','adobe premier pro','premier pro','adobe indesign','indesign','wireframe','solid','grasp','user research','user experience']
 
@@ -248,8 +251,8 @@ def run():
                     ## Data science recommendation
                     if i.lower() in ds_keyword:
                         print(i.lower())
-                        reco_field = 'Data Science'
-                        st.success("** Our analysis says you are looking for Data Science Jobs.**")
+                        reco_field = 'Data Science & ML Engineer'
+                        st.success("** Our analysis says you are looking for Data Science & ML Engineer Jobs.**")
                         recommended_skills = ['Data Visualization','Predictive Analysis','Statistical Modeling','Data Mining','Clustering & Classification','Data Analytics','Quantitative Analysis','Web Scraping','ML Algorithms','Keras','Pytorch','Probability','Scikit-learn','Tensorflow',"Flask",'Streamlit']
                         recommended_keywords = st_tags(label='### Recommended skills for you.',
                         text='Recommended skills generated from System',value=recommended_skills,key = '2')
@@ -260,8 +263,8 @@ def run():
                     ## Web development recommendation
                     elif i.lower() in web_keyword:
                         print(i.lower())
-                        reco_field = 'Web Development'
-                        st.success("** Our analysis says you are looking for Web Development Jobs **")
+                        reco_field = 'Web Development & Software Engineer'
+                        st.success("** Our analysis says you are looking for Web Development & Software Engineer Jobs **")
                         recommended_skills = ['React','Django','Node JS','React JS','php','laravel','Magento','wordpress','Javascript','Angular JS','c#','Flask','SDK']
                         recommended_keywords = st_tags(label='### Recommended skills for you.',
                         text='Recommended skills generated from System',value=recommended_skills,key = '3')
@@ -320,37 +323,57 @@ def run():
                 #############################
 
                 st.subheader("**Resume Tips & Ideas💡**")
+                #######
+                resume_text=resume_text.lower()
+                ######
                 resume_score = 0
-                if 'Objective' in resume_text:
-                    resume_score = resume_score+20
-                    st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added Objective</h4>''',unsafe_allow_html=True)
+                ################
+                if 'objective' or 'professional summary' or'summary' or 'summary statement' in resume_text:
+                    resume_score = resume_score+10
+                    st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added summary</h4>''',unsafe_allow_html=True)
                 else:
                     st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add your career objective, it will give your career intension to the Recruiters.</h4>''',unsafe_allow_html=True)
-
-                if 'Declaration'  in resume_text:
-                    resume_score = resume_score + 20
-                    st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added Delcaration/h4>''',unsafe_allow_html=True)
+                #############
+                if 'education'  in resume_text:
+                    resume_score = resume_score + 10
+                    st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added education/h4>''',unsafe_allow_html=True)
                 else:
-                    st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add Declaration. It will give the assurance that everything written on your resume is true and fully acknowledged by you</h4>''',unsafe_allow_html=True)
-
-                if 'Hobbies' or 'Interests'in resume_text:
+                    st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add education. It will give the assurance that everything written on your resume is true and fully acknowledged by you</h4>''',unsafe_allow_html=True)
+                ################
+                if 'internship' or 'experience' or 'work history' or 'professional experience 'in resume_text:
                     resume_score = resume_score + 20
-                    st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added your Hobbies</h4>''',unsafe_allow_html=True)
+                    st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added your work history</h4>''',unsafe_allow_html=True)
                 else:
-                    st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add Hobbies. It will show your persnality to the Recruiters and give the assurance that you are fit for this role or not.</h4>''',unsafe_allow_html=True)
-
-                if 'Achievements' in resume_text:
-                    resume_score = resume_score + 20
+                    st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add work history. </h4>''',unsafe_allow_html=True)
+                ################
+                if 'achievements' in resume_text:
+                    resume_score = resume_score + 10
                     st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added your Achievements </h4>''',unsafe_allow_html=True)
                 else:
                     st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add Achievements. It will show that you are capable for the required position.</h4>''',unsafe_allow_html=True)
-
-                if 'Projects' in resume_text:
+                
+                ###################
+                if 'projects'  in resume_text:
                     resume_score = resume_score + 20
                     st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added your Projects</h4>''',unsafe_allow_html=True)
                 else:
                     st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add Projects. It will show that you have done work related the required position or not.</h4>''',unsafe_allow_html=True)
+                ######################
+                ################
+                if 'certifications' or 'certificates' in resume_text:
+                    resume_score = resume_score + 10
+                    st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added your certificates</h4>''',unsafe_allow_html=True)
+                else:
+                    st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add certificates. It will show that you have done work related the required position or not.</h4>''',unsafe_allow_html=True)
+                ###################
 
+                #################
+                if 'skills' or 'technical skills' in resume_text:
+                    resume_score = resume_score + 10
+                    st.markdown('''<h5 style='text-align: left; color: #1ed760;'>[+] Awesome! You have added your Technical skills</h4>''',unsafe_allow_html=True)
+                else:
+                    st.markdown('''<h5 style='text-align: left; color: #000000;'>[-] Please add Technical skills. It will show that you have done work related the required position or not.</h4>''',unsafe_allow_html=True)
+                ##################
                 st.subheader("**Resume Score📝**")
                 st.markdown(
                     """
